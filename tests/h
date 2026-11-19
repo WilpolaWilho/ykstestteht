@@ -1,0 +1,180 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema Elokuvateatteri
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema Elokuvateatteri
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `Elokuvateatteri` DEFAULT CHARACTER SET utf8 ;
+USE `Elokuvateatteri` ;
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Asiakas`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Asiakas` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Asiakas` (
+  `idAsiakas` INT NOT NULL AUTO_INCREMENT,
+  `etunimi` VARCHAR(45) NOT NULL,
+  `sukunimi` VARCHAR(45) NOT NULL,
+  `syntymaaika` DATE NOT NULL,
+  `s-posti` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idAsiakas`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Sali`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Sali` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Sali` (
+  `idSali` INT NOT NULL AUTO_INCREMENT,
+  `saliNro` INT NOT NULL,
+  PRIMARY KEY (`idSali`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Elokuva`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Elokuva` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Elokuva` (
+  `idElokuva` INT NOT NULL AUTO_INCREMENT,
+  `kesto` VARCHAR(15) NOT NULL,
+  `nimi` VARCHAR(45) NOT NULL,
+  `ensi-ilta` DATE NULL,
+  `kuvaus` TINYTEXT NOT NULL,
+  `tekstitys` VARCHAR(45) NOT NULL,
+  `kieli` VARCHAR(20) NOT NULL,
+  `ikaraja` INT NOT NULL,
+  PRIMARY KEY (`idElokuva`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Naytos`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Naytos` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Naytos` (
+  `idNaytos` INT NOT NULL AUTO_INCREMENT,
+  `aika` VARCHAR(15) NOT NULL,
+  `pvm` DATE NOT NULL,
+  `Sali_idSali` INT NOT NULL,
+  `Elokuva_idElokuva` INT NOT NULL,
+  PRIMARY KEY (`idNaytos`),
+  INDEX `fk_Näytös_Sali1_idx` (`Sali_idSali` ASC) VISIBLE,
+  INDEX `fk_Näytös_Elokuva1_idx` (`Elokuva_idElokuva` ASC) VISIBLE,
+  CONSTRAINT `fk_Näytös_Sali1`
+    FOREIGN KEY (`Sali_idSali`)
+    REFERENCES `Elokuvateatteri`.`Sali` (`idSali`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Näytös_Elokuva1`
+    FOREIGN KEY (`Elokuva_idElokuva`)
+    REFERENCES `Elokuvateatteri`.`Elokuva` (`idElokuva`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Varaus`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Varaus` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Varaus` (
+  `idVaraus` INT NOT NULL AUTO_INCREMENT,
+  `pvm` DATE NOT NULL,
+  `Asiakas_idAsiakas` INT NOT NULL,
+  `Naytos_idNaytos` INT NOT NULL,
+  PRIMARY KEY (`idVaraus`),
+  INDEX `fk_Varaus_Asiakas_idx` (`Asiakas_idAsiakas` ASC) VISIBLE,
+  INDEX `fk_Varaus_Näytös1_idx` (`Naytos_idNaytos` ASC) VISIBLE,
+  CONSTRAINT `fk_Varaus_Asiakas`
+    FOREIGN KEY (`Asiakas_idAsiakas`)
+    REFERENCES `Elokuvateatteri`.`Asiakas` (`idAsiakas`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Varaus_Näytös1`
+    FOREIGN KEY (`Naytos_idNaytos`)
+    REFERENCES `Elokuvateatteri`.`Naytos` (`idNaytos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Paikka`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Paikka` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Paikka` (
+  `idPaikka` INT NOT NULL AUTO_INCREMENT,
+  `rivi` INT NOT NULL,
+  `istuinNro` INT NOT NULL,
+  `Varaus_idVaraus` INT NULL,
+  `Sali_idSali` INT NOT NULL,
+  PRIMARY KEY (`idPaikka`),
+  INDEX `fk_Paikka_Varaus1_idx` (`Varaus_idVaraus` ASC) VISIBLE,
+  INDEX `fk_Paikka_Sali1_idx` (`Sali_idSali` ASC) VISIBLE,
+  CONSTRAINT `fk_Paikka_Varaus1`
+    FOREIGN KEY (`Varaus_idVaraus`)
+    REFERENCES `Elokuvateatteri`.`Varaus` (`idVaraus`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Paikka_Sali1`
+    FOREIGN KEY (`Sali_idSali`)
+    REFERENCES `Elokuvateatteri`.`Sali` (`idSali`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Genre`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Genre` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Genre` (
+  `idGenre` INT NOT NULL AUTO_INCREMENT,
+  `nimi` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`idGenre`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Elokuvateatteri`.`Elokuva_Genre`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Elokuvateatteri`.`Elokuva_Genre` ;
+
+CREATE TABLE IF NOT EXISTS `Elokuvateatteri`.`Elokuva_Genre` (
+  `Elokuva_idElokuva` INT NOT NULL,
+  `Genre_idGenre` INT NOT NULL,
+  PRIMARY KEY (`Elokuva_idElokuva`, `Genre_idGenre`),
+  INDEX `fk_Elokuva_has_Genre_Genre1_idx` (`Genre_idGenre` ASC) VISIBLE,
+  INDEX `fk_Elokuva_has_Genre_Elokuva1_idx` (`Elokuva_idElokuva` ASC) VISIBLE,
+  CONSTRAINT `fk_Elokuva_has_Genre_Elokuva1`
+    FOREIGN KEY (`Elokuva_idElokuva`)
+    REFERENCES `Elokuvateatteri`.`Elokuva` (`idElokuva`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Elokuva_has_Genre_Genre1`
+    FOREIGN KEY (`Genre_idGenre`)
+    REFERENCES `Elokuvateatteri`.`Genre` (`idGenre`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

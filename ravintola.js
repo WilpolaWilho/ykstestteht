@@ -18,7 +18,6 @@ const Ravintola = function () {
   this.jalkiruokaHinta = 4;
   this.juomaHinta = 3;
   this.paikkojenMaara = 15;
-  this.paikat; // TÃ¤hÃ¤n muuttujaan paikkojen taulukko
 };
 
 /**
@@ -94,21 +93,6 @@ Ravintola.prototype.tarkistaPaikkojenMaara = function (asiakkaidenMaara) {
     );
     return false;
   }
-};
-
-/**
- * Luo Ravintolan paikat-muuttujaan uuden taulukon, jonka koko mÃ¤Ã¤rÃ¤ytyy paikkojenMaara-muuttujan mukaisesti,
- * ja tÃ¤yttÃ¤Ã¤ taulukon boolean arvolla false.
- */
-Ravintola.prototype.generoiPaikat = function () {
-  //Koodisi tÃ¤nne
-};
-
-/**
- * JSDoc tÃ¤nne
- */
-Ravintola.prototype.varaaPaikat = function (varauksenMaara) {
-  //Koodisi tÃ¤nne
 };
 
 /**
